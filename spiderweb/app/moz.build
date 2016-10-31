@@ -6,12 +6,13 @@ GeckoProgram('spiderweb', linkage='dependent')
 
 FINAL_TARGET = 'dist/bin'
 
+DEFINES['NODE_WANT_INTERNALS'] = 1
+DEFINES['MOZILLA_INTERNAL_API'] = True
+
 SOURCES += [
     'Main.cpp',
+    'NodeBindings.cpp',
 ]
-
-
-DEFINES['NODE_WANT_INTERNALS'] = 1
 
 # Spiderweb needs -mmacosx-version-min=10.9 in order to build SpiderNode per
 # https://github.com/mozilla/spidernode/issues/166.
@@ -50,5 +51,15 @@ LOCAL_INCLUDES += [
   '../spidernode/deps/uv/include',
   '../spidernode/src',
 ]
+
+if CONFIG['OS_ARCH'] == 'Darwin':
+    SOURCES += [
+        'NodeBindingsMac.cpp',
+    ]
+
+if CONFIG['OS_ARCH'] == 'Linux':
+    SOURCES += [
+        'NodeBindingsLinux.cpp',
+    ]
 
 include('/ipc/chromium/chromium-config.mozbuild')
