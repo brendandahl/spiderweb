@@ -12,7 +12,6 @@ EXPORTS += [
 ]
 
 UNIFIED_SOURCES += [
-  'NodeChild.cpp',
   'NodeParent.cpp',
   'NodeProcessChild.cpp',
   'NodeProcessParent.cpp',
@@ -23,5 +22,54 @@ IPDL_SOURCES += [
 ]
 
 include('/ipc/chromium/chromium-config.mozbuild')
+
+
+# <<<<<<<<<
+
+DEFINES['NODE_WANT_INTERNALS'] = 1
+DEFINES['MOZILLA_INTERNAL_API'] = True
+
+SOURCES += [
+  'app/NodeBindings.cpp',
+  'NodeChild.cpp',
+]
+
+# Spiderweb needs -mmacosx-version-min=10.9 in order to build SpiderNode per
+# https://github.com/mozilla/spidernode/issues/166.
+if CONFIG['OS_ARCH'] == 'Darwin':
+    CXXFLAGS += ['-mmacosx-version-min=10.9']
+    LDFLAGS += ['-mmacosx-version-min=10.9']
+
+# The SpiderNode libraries that spiderweb uses.  This needs to be kept in sync
+# with the SPIDERNODE_LIBS list in spiderweb/webidl/Makefile.in.
+USE_LIBS += [
+    'static:/spiderweb/app/spidernode/.libs/cares',
+    'static:/spiderweb/app/spidernode/.libs/http_parser',
+    'static:/spiderweb/app/spidernode/.libs/node',
+    'static:/spiderweb/app/spidernode/.libs/openssl',
+    'static:/spiderweb/app/spidernode/.libs/spidershim',
+    'static:/spiderweb/app/spidernode/.libs/uv',
+    'static:/spiderweb/app/spidernode/.libs/zlib',
+]
+
+LOCAL_INCLUDES += [
+  'spidernode/deps/cares/include',
+  'spidernode/deps/spidershim/include',
+  'spidernode/deps/uv/include',
+  'spidernode/src',
+]
+
+if CONFIG['OS_ARCH'] == 'Darwin':
+    SOURCES += [
+        'app/NodeBindingsMac.cpp',
+    ]
+
+if CONFIG['OS_ARCH'] == 'Linux':
+    SOURCES += [
+        'app/NodeBindingsLinux.cpp',
+    ]
+
+
+# >>>>>>>>>
 
 FINAL_LIBRARY = 'xul'

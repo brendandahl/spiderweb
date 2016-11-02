@@ -24,9 +24,12 @@ public:
   bool Init() override;
   void CleanUp() override;
 
+  void SetAppDir(const nsACString& aPath);
+
 private:
   DISALLOW_COPY_AND_ASSIGN(NodeProcessChild);
   NodeChild mNodeChild;
+  nsAutoCString mAppDir;
 };
 
 } // namespace node

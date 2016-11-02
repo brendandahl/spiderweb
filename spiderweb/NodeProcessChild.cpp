@@ -28,12 +28,19 @@ NodeProcessChild::Init()
 {
   return mNodeChild.Init(ParentPid(),
                          IOThreadChild::message_loop(),
-                         IOThreadChild::channel());
+                         IOThreadChild::channel(),
+                         mAppDir);
 }
 
 void
 NodeProcessChild::CleanUp()
 {
+}
+
+void
+NodeProcessChild::SetAppDir(const nsACString& aPath)
+{
+  mAppDir = aPath;
 }
 
 } // namespace node

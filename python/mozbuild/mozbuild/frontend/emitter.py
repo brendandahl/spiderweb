@@ -281,6 +281,7 @@ class TreeMetadataEmitter(LoggingMixin):
             name = mozpath.basename(path)
             dir = mozpath.dirname(path)
             candidates = [l for l in self._libs[name] if l.KIND == obj.KIND]
+            print candidates
             if dir:
                 if dir.startswith('/'):
                     dir = mozpath.normpath(

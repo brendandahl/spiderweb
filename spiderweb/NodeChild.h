@@ -20,7 +20,8 @@ public:
 
   bool Init(base::ProcessId aParentPid,
             MessageLoop* aIOLoop,
-            IPC::Channel* aChannel);
+            IPC::Channel* aChannel,
+            nsAutoCString aNativeGREPath);
 
   void Pong() {};
 

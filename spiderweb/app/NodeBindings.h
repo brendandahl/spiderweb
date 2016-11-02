@@ -6,8 +6,8 @@
 #define MOZILLA_COMMON_NODE_BINDINGS_H_
 
 #include <list>
-#include "node.h"
 #include "uv.h"
+#include "v8.h"
 #include "nsISupportsImpl.h"
 
 class MessageLoop;

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/message_loop.h"
+#undef arraysize
 #include "env-inl.h"
 #include "jsapi.h"
 #include "jsfriendapi.h"

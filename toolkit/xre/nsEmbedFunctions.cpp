@@ -663,8 +663,26 @@ XRE_InitChildProcess(int aArgc,
         process = new gfx::GPUProcessImpl(parentPID);
         break;
 
-      case GeckoProcessType_Node:
-        process = new node::NodeProcessChild(parentPID);
+      case GeckoProcessType_Node: {
+          process = new node::NodeProcessChild(parentPID);
+          bool foundAppdir = false;
+          for (int idx = aArgc; idx > 0; idx--) {
+            if (aArgv[idx] && !strcmp(aArgv[idx], "-appdir")) {
+              MOZ_ASSERT(!foundAppdir);
+              if (foundAppdir) {
+                  continue;
+              }
+              nsCString appDir;
+              appDir.Assign(nsDependentCString(aArgv[idx+1]));
+              static_cast<node::NodeProcessChild*>(process.get())->SetAppDir(appDir);
+              foundAppdir = true;
+            }
+
+            if (foundAppdir) {
+              break;
+            }
+          }
+        }
         break;
 
       default:
