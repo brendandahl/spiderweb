@@ -16,6 +16,20 @@ UNIFIED_SOURCES += [
   'NodeProcessParent.cpp',
 ]
 
+SOURCES += [
+  'NodeBindings.cpp',
+]
+
+if CONFIG['OS_ARCH'] == 'Darwin':
+    SOURCES += [
+        'NodeBindingsMac.cpp',
+    ]
+
+if CONFIG['OS_ARCH'] == 'Linux':
+    SOURCES += [
+        'NodeBindingsLinux.cpp',
+    ]
+
 IPDL_SOURCES += [
   'PNode.ipdl',
 ]
@@ -24,6 +38,9 @@ include('/ipc/chromium/chromium-config.mozbuild')
 
 DEFINES['NODE_WANT_INTERNALS'] = 1
 DEFINES['MOZILLA_INTERNAL_API'] = True
+
+if CONFIG['MOZ_ICU_DATA_ARCHIVE']:
+    DEFINES['MOZ_ICU_DATA_ARCHIVE'] = True
 
 # Spiderweb needs -mmacosx-version-min=10.9 in order to build SpiderNode per
 # https://github.com/mozilla/spidernode/issues/166.
