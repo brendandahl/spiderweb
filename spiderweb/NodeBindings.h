@@ -32,12 +32,10 @@ class NodeBindings {
   static NodeBindings *Instance();
 
   // Setup V8, libuv.
-  void Initialize(mozilla::node::NodeChild* nodeChild, int argc, char** argv);
+  void Initialize(JSContext* aContext, JSObject* aGlobal, int argc, char** argv);
 
   // Create the environment and load node.js.
-  ::node::Environment* CreateEnvironment(v8::Handle<v8::Context> context,
-                                        int argc,
-                                        char** argv);
+  ::node::Environment* CreateEnvironment(v8::Handle<v8::Context> context, int argc, char** argv);
 
   // Load node.js in the environment.
   void LoadEnvironment(::node::Environment* env);

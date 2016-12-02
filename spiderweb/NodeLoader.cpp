@@ -12,6 +12,8 @@
 #include "nsComponentManagerUtils.h"
 #include "NodeProcessParent.h"
 #include "NodeParent.h"
+#include "NodeBindings.h"
+#include "nsAppRunner.h"
 
 using namespace mozilla;
 
@@ -54,21 +56,33 @@ NodeLoader::~NodeLoader()
 /* void start (); */
 NS_IMETHODIMP NodeLoader::Start(const nsACString & script, nsINodeObserver *observer, JSContext* cx)
 {
-  nodeParent = new node::NodeParent(script, observer);
-  if (NS_FAILED(nodeParent->LaunchProcess())) {
-    delete nodeParent;
-    return NS_ERROR_FAILURE;
-  }
+  // nodeParent = new node::NodeParent(script, observer);
+  // if (NS_FAILED(nodeParent->LaunchProcess())) {
+  //   delete nodeParent;
+  //   return NS_ERROR_FAILURE;
+  // }
+  nsAutoCString autoScript(script);
+
+  JSObject* globalObject = JS::CurrentGlobalOrNull(cx);
+  MOZ_ASSERT(globalObject);
+  mNodeBindings = NodeBindings::Create();
+  int argc = 2;
+  char **argv = new char *[argc + 1];
+  argv[0] = gArgv[0];
+  argv[1] = const_cast<char*>(autoScript.get());
+  // NodeBindings* nb = NodeBindings::Instance();
+  // nb->Initialize(this, aInitArgs.Length(), args);
+  mNodeBindings->Initialize(cx, globalObject, argc, argv);
 
   return NS_OK;
 }
 
 NS_IMETHODIMP NodeLoader::PostMessage(const nsACString & msg, JSContext* cx)
 {
-  nsAutoCString autoMsg(msg);
-  if (!nodeParent->SendMessage(autoMsg)) {
-    return NS_ERROR_FAILURE;
-  }
+  // nsAutoCString autoMsg(msg);
+  // if (!nodeParent->SendMessage(autoMsg)) {
+  //   return NS_ERROR_FAILURE;
+  // }
   return NS_OK;
 }
 

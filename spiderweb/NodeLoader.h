@@ -11,6 +11,7 @@
 #include "nsISupports.h"
 
 namespace mozilla {
+class NodeBindings;
 namespace node {
   class NodeParent;
 }
@@ -28,6 +29,7 @@ private:
   ~NodeLoader();
 
   mozilla::node::NodeParent* nodeParent;
+  mozilla::NodeBindings* mNodeBindings;
 
 protected:
 };

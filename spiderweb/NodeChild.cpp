@@ -88,8 +88,8 @@ NodeChild::RecvStartNode(nsTArray<nsCString>&& aInitArgs,
   for (uint32_t t = 0; t < aInitArgs.Length(); t++) {
     args[t] = const_cast<char*>(aInitArgs[t].get());
   }
-  NodeBindings* nb = NodeBindings::Instance();
-  nb->Initialize(this, aInitArgs.Length(), args);
+  // NodeBindings* nb = NodeBindings::Instance();
+  // nb->Initialize(this, aInitArgs.Length(), args);
 
   return IPC_OK();
 }

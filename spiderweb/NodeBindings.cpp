@@ -8,13 +8,27 @@
 #include <string>
 #include <vector>
 
+#include "mozilla/dom/ScriptSettings.h" // for AutoJSAPI
 #include "base/message_loop.h"
 #undef arraysize
 #include "env-inl.h"
 #include "jsapi.h"
 #include "jsfriendapi.h"
+#include "nsString.h"
+#include "nsContentUtils.h"
+#include "nsJSPrincipals.h"
+#include "xpcprivate.h"
 
 namespace mozilla {
+
+void* CreatePrivateCompartmentDataCallback(JSObject* aGlobal) {
+  JSCompartment* chromeCompartment = js::GetObjectCompartment(aGlobal);
+  xpc::CompartmentPrivate* origCompartmentPrivate = (xpc::CompartmentPrivate*)JS_GetCompartmentPrivate(chromeCompartment);
+  xpc::CompartmentPrivate* priv = new xpc::CompartmentPrivate(chromeCompartment);
+  priv->scope = origCompartmentPrivate->scope;
+  priv->SetLocation(NS_LITERAL_CSTRING("chrome://NodeBindings"));
+  return priv;
+}
 
 NodeBindings::NodeBindings()
     : message_loop_(nullptr),
@@ -40,12 +54,18 @@ NodeBindings::~NodeBindings() {
   isolate->Dispose();
 }
 
-void NodeBindings::Initialize(node::NodeChild* nodeChild, int argc, char** argv) {
-  node_child = nodeChild;
+void NodeBindings::Initialize(JSContext* aContext, JSObject* aGlobal, int argc, char** argv) {
+  dom::AutoEntryScript aes(aGlobal, "NodeBindings Initialize");
+  JS::Rooted<JS::Value> components(aContext);
+  JS::Rooted<JSObject*> globalHandle(aContext, aGlobal);
+  bool gotProp = JS_GetProperty(aContext, globalHandle, "Components", &components);
+  MOZ_ASSERT(gotProp, "Got components object.");
+  nsCOMPtr<nsIPrincipal> principal = nsContentUtils::GetSystemPrincipal();
+
   v8::V8::Initialize();
   uv_async_init(uv_default_loop(), &call_next_tick_async_, OnCallNextTick);
   call_next_tick_async_.data = this;
-  isolate = v8::Isolate::New();
+   isolate = v8::Isolate::New(aContext, aGlobal, nsJSPrincipals::get(principal), components, &CreatePrivateCompartmentDataCallback);
   // TODO: FIX THIS LEAK
   isolate_scope = new v8::Isolate::Scope(isolate);
 

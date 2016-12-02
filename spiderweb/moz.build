@@ -83,6 +83,7 @@ USE_LIBS += [
 ]
 
 LOCAL_INCLUDES += [
+  '/js/xpconnect/src',
   'spidernode/deps/cares/include',
   'spidernode/deps/spidershim/include',
   'spidernode/deps/uv/include',
