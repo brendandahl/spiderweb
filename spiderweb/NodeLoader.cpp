@@ -14,6 +14,8 @@
 #include "NodeParent.h"
 #include "NodeBindings.h"
 #include "nsAppRunner.h"
+#include "nsDirectoryService.h"
+#include "nsDirectoryServiceDefs.h"
 
 using namespace mozilla;
 
@@ -63,13 +65,26 @@ NS_IMETHODIMP NodeLoader::Start(const nsACString & script, nsINodeObserver *obse
   // }
   nsAutoCString autoScript(script);
 
+  // Build the path to the init script.
+  nsCOMPtr<nsIFile> greDir;
+  nsDirectoryService::gService->Get(NS_GRE_DIR,
+                                    NS_GET_IID(nsIFile),
+                                    getter_AddRefs(greDir));
+  MOZ_ASSERT(greDir);
+  greDir->AppendNative(NS_LITERAL_CSTRING("modules"));
+  greDir->AppendNative(NS_LITERAL_CSTRING("spiderweb"));
+  greDir->AppendNative(NS_LITERAL_CSTRING("init.js"));
+  nsAutoString initScript;
+  greDir->GetPath(initScript);
+
   JSObject* globalObject = JS::CurrentGlobalOrNull(cx);
   MOZ_ASSERT(globalObject);
   mNodeBindings = NodeBindings::Create();
-  int argc = 2;
+  int argc = 3;
   char **argv = new char *[argc + 1];
   argv[0] = gArgv[0];
-  argv[1] = const_cast<char*>(autoScript.get());
+  argv[1] = const_cast<char*>(ToNewCString(initScript));
+  argv[2] = const_cast<char*>(autoScript.get());
   // NodeBindings* nb = NodeBindings::Instance();
   // nb->Initialize(this, aInitArgs.Length(), args);
   mNodeBindings->Initialize(cx, globalObject, argc, argv);
