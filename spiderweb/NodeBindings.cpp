@@ -195,6 +195,12 @@ void NodeBindings::UvRunOnce() {
   v8::MicrotasksScope script_scope(env->isolate(),
                                    v8::MicrotasksScope::kRunMicrotasks);
 
+  JSContext* cx = JSContextFromIsolate(env->isolate());
+  MOZ_ASSERT(cx);
+  JSObject* globalObject = JS::CurrentGlobalOrNull(cx);
+  MOZ_ASSERT(globalObject);
+  dom::AutoEntryScript aes(globalObject, "NodeBindings::UvRunOnce");
+
   // Deal with uv events.
   int r = uv_run(uv_loop_, UV_RUN_NOWAIT);
   if (r == 0) {
