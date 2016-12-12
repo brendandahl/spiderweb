@@ -29,7 +29,7 @@ private:
   ~NodeLoader();
 
   mozilla::node::NodeParent* nodeParent;
-  mozilla::NodeBindings* mNodeBindings;
+  RefPtr<mozilla::NodeBindings> mNodeBindings;
 
 protected:
 };
