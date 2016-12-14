@@ -91,10 +91,10 @@ NodeParent::LaunchProcess()
 void
 NodeParent::DeleteProcess()
 {
-  Close();
+  // Close();
 
-  mProcess->Delete();
-  mProcess = nullptr;
+  // mProcess->Delete();
+  // mProcess = nullptr;
 }
 
 mozilla::ipc::IPCResult

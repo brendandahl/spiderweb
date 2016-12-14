@@ -49,15 +49,19 @@ NodeLoader::NodeLoader()
 
 NodeLoader::~NodeLoader()
 {
-  if (nodeParent) {
-    nodeParent->DeleteProcess();
-    delete nodeParent;
-  }
+  // if (nodeParent) {
+  //   nodeParent->DeleteProcess();
+  //   delete nodeParent;
+  // }
 }
 
 /* void start (); */
 NS_IMETHODIMP NodeLoader::Start(const nsACString & script, nsINodeObserver *observer, JSContext* cx)
 {
+  if (mNodeBindings) {
+    printf(">>> Node already started!\n");
+    return NS_OK;
+  }
   // nodeParent = new node::NodeParent(script, observer);
   // if (NS_FAILED(nodeParent->LaunchProcess())) {
   //   delete nodeParent;
